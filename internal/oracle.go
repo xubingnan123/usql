@@ -6,5 +6,5 @@ package internal
 
 import (
 	// oracle driver
-	_ "github.com/xo/usql/drivers/oracle"
+	_ "github.com/xubingnan123/usql/drivers/oracle"
 )

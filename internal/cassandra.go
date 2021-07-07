@@ -6,5 +6,5 @@ package internal
 
 import (
 	// cassandra driver
-	_ "github.com/xo/usql/drivers/cassandra"
+	_ "github.com/xubingnan123/usql/drivers/cassandra"
 )

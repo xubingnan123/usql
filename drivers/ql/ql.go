@@ -6,7 +6,7 @@ import (
 	// DRIVER: ql
 	_ "github.com/cznic/ql/driver"
 
-	"github.com/xo/usql/drivers"
+	"github.com/xubingnan123/usql/drivers"
 )
 
 func init() {

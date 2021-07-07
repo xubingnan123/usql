@@ -6,5 +6,5 @@ package internal
 
 import (
 	// firebird driver
-	_ "github.com/xo/usql/drivers/firebird"
+	_ "github.com/xubingnan123/usql/drivers/firebird"
 )

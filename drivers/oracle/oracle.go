@@ -10,8 +10,8 @@ import (
 	_ "gopkg.in/rana/ora.v4"
 
 	"github.com/xo/dburl"
-	"github.com/xo/usql/drivers"
-	"github.com/xo/usql/env"
+	"github.com/xubingnan123/usql/drivers"
+	"github.com/xubingnan123/usql/env"
 )
 
 var allCapsRE = regexp.MustCompile(`^[A-Z][A-Z0-9_]+$`)

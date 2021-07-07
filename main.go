@@ -11,12 +11,12 @@ import (
 
 	"github.com/alexflint/go-arg"
 
-	"github.com/xo/usql/drivers"
-	"github.com/xo/usql/env"
-	"github.com/xo/usql/handler"
-	"github.com/xo/usql/internal"
-	"github.com/xo/usql/rline"
-	"github.com/xo/usql/text"
+	"github.com/xubingnan123/usql/drivers"
+	"github.com/xubingnan123/usql/env"
+	"github.com/xubingnan123/usql/handler"
+	"github.com/xubingnan123/usql/internal"
+	"github.com/xubingnan123/usql/rline"
+	"github.com/xubingnan123/usql/text"
 )
 
 func main() {
@@ -71,7 +71,7 @@ func main() {
 			if t, ok := m[tag]; ok {
 				tag = t
 			}
-			fmt.Fprintf(os.Stderr, "\ntry:\n\n  go get -u -tags %s github.com/xo/usql\n\n", tag)
+			fmt.Fprintf(os.Stderr, "\ntry:\n\n  go get -u -tags %s github.com/xubingnan123/usql\n\n", tag)
 		}
 
 		os.Exit(1)

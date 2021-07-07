@@ -4,7 +4,7 @@ package stmt
 import (
 	"bytes"
 
-	"github.com/xo/usql/env"
+	"github.com/xubingnan123/usql/env"
 )
 
 const (

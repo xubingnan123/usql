@@ -6,5 +6,5 @@ package internal
 
 import (
 	// couchbase driver
-	_ "github.com/xo/usql/drivers/couchbase"
+	_ "github.com/xubingnan123/usql/drivers/couchbase"
 )

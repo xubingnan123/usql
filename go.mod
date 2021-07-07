@@ -1,4 +1,4 @@
-module github.com/xo/usql
+module github.com/xubingnan123/usql
 
 go 1.16
 

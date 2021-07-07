@@ -6,5 +6,5 @@ package internal
 
 import (
 	// mymysql driver
-	_ "github.com/xo/usql/drivers/mymysql"
+	_ "github.com/xubingnan123/usql/drivers/mymysql"
 )

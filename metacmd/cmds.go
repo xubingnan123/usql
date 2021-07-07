@@ -10,9 +10,9 @@ import (
 
 	"github.com/xo/dburl"
 
-	"github.com/xo/usql/drivers"
-	"github.com/xo/usql/env"
-	"github.com/xo/usql/text"
+	"github.com/xubingnan123/usql/drivers"
+	"github.com/xubingnan123/usql/env"
+	"github.com/xubingnan123/usql/text"
 )
 
 // Cmd is a command implementation.

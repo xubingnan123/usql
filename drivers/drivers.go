@@ -10,8 +10,8 @@ import (
 	"github.com/alecthomas/chroma/lexers"
 	"github.com/xo/dburl"
 
-	"github.com/xo/usql/stmt"
-	"github.com/xo/usql/text"
+	"github.com/xubingnan123/usql/stmt"
+	"github.com/xubingnan123/usql/text"
 )
 
 // DB is the common interface for database operations, compatible with

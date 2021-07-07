@@ -6,5 +6,5 @@ package internal
 
 import (
 	// postgres driver
-	_ "github.com/xo/usql/drivers/postgres"
+	_ "github.com/xubingnan123/usql/drivers/postgres"
 )

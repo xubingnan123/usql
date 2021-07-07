@@ -6,5 +6,5 @@ package internal
 
 import (
 	// saphana driver
-	_ "github.com/xo/usql/drivers/saphana"
+	_ "github.com/xubingnan123/usql/drivers/saphana"
 )

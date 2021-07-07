@@ -6,5 +6,5 @@ package internal
 
 import (
 	// presto driver
-	_ "github.com/xo/usql/drivers/presto"
+	_ "github.com/xubingnan123/usql/drivers/presto"
 )

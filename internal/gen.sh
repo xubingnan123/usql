@@ -38,7 +38,7 @@ package internal
 
 import (
   // $NAME driver
-  _ "github.com/xo/usql/drivers/$NAME"
+  _ "github.com/xubingnan123/usql/drivers/$NAME"
 )
 ENDSTR
 )

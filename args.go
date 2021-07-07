@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/xo/usql/text"
+	"github.com/xubingnan123/usql/text"
 )
 
 // Args are the command line arguments.

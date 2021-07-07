@@ -7,10 +7,10 @@ import (
 
 	"github.com/xo/dburl"
 
-	"github.com/xo/usql/drivers"
-	"github.com/xo/usql/env"
-	"github.com/xo/usql/rline"
-	"github.com/xo/usql/stmt"
+	"github.com/xubingnan123/usql/drivers"
+	"github.com/xubingnan123/usql/env"
+	"github.com/xubingnan123/usql/rline"
+	"github.com/xubingnan123/usql/stmt"
 )
 
 // Handler is the shared interface for a command handler.

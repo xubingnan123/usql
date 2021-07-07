@@ -20,13 +20,13 @@ import (
 	"github.com/olekukonko/tablewriter"
 	"github.com/xo/dburl"
 
-	"github.com/xo/usql/drivers"
-	"github.com/xo/usql/env"
-	"github.com/xo/usql/metacmd"
-	"github.com/xo/usql/rline"
-	"github.com/xo/usql/stmt"
-	ustyles "github.com/xo/usql/styles"
-	"github.com/xo/usql/text"
+	"github.com/xubingnan123/usql/drivers"
+	"github.com/xubingnan123/usql/env"
+	"github.com/xubingnan123/usql/metacmd"
+	"github.com/xubingnan123/usql/rline"
+	"github.com/xubingnan123/usql/stmt"
+	ustyles "github.com/xubingnan123/usql/styles"
+	"github.com/xubingnan123/usql/text"
 )
 
 // Handler is a input process handler.

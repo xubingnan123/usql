@@ -6,7 +6,7 @@ import (
 	// DRIVER: presto
 	_ "github.com/prestodb/presto-go-client/presto"
 
-	"github.com/xo/usql/drivers"
+	"github.com/xubingnan123/usql/drivers"
 )
 
 var endRE = regexp.MustCompile(`;?\s*$`)

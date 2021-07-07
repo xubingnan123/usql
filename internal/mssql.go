@@ -6,5 +6,5 @@ package internal
 
 import (
 	// mssql driver
-	_ "github.com/xo/usql/drivers/mssql"
+	_ "github.com/xubingnan123/usql/drivers/mssql"
 )

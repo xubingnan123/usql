@@ -10,7 +10,7 @@ SQLite3, Microsoft SQL Server, [and other SQL databases][Database Support].
 [Commands]: #commands (Commands)
 [Building]: #building (Building)
 [Database Support]: #database-support (Database Support)
-[Releases]: https://github.com/xo/usql/releases (Releases)
+[Releases]: https://github.com/xubingnan123/usql/releases (Releases)
 
 ## Overview
 
@@ -43,17 +43,17 @@ available for other databases.
 
 ```sh
 # install usql with basic database support (includes PosgreSQL, MySQL, SQLite3, and MS SQL drivers)
-$ go get -u github.com/xo/usql
+$ go get -u github.com/xubingnan123/usql
 ```
 
 Support for additional databases can be specified with [build tags][Database Support]:
 
 ```sh
 # install usql with most drivers (excludes drivers requiring CGO)
-$ go get -u -tags most github.com/xo/usql
+$ go get -u -tags most github.com/xubingnan123/usql
 
 # install usql with all drivers (includes drivers requiring CGO, namely Oracle and ODBC drivers)
-$ go get -u -tags all github.com/xo/usql
+$ go get -u -tags all github.com/xubingnan123/usql
 ```
 
 ### Installing via Homebrew (OSX)
@@ -327,13 +327,13 @@ drivers, respectively:
 
 ```sh
 # install all drivers
-$ go get -u -tags all github.com/xo/usql
+$ go get -u -tags all github.com/xubingnan123/usql
 
 # install with most drivers (same as all but excludes Oracle/ODBC)
-$ go get -u -tags most github.com/xo/usql
+$ go get -u -tags most github.com/xubingnan123/usql
 
 # install with base drivers and Oracle/ODBC support
-$ go get -u -tags 'oracle odbc' github.com/xo/usql
+$ go get -u -tags 'oracle odbc' github.com/xubingnan123/usql
 ```
 
 For every build tag `<driver>`, there is also the `no_<driver>` build tag
@@ -341,7 +341,7 @@ disabling the driver:
 
 ```sh
 # install all drivers excluding avatica and couchbase
-$ go get -u -tags 'all no_avatica no_couchbase' github.com/xo/usql
+$ go get -u -tags 'all no_avatica no_couchbase' github.com/xubingnan123/usql
 ```
 
 ### Release Builds
@@ -444,7 +444,7 @@ support for the most frequently used aspects/features of `psql`. Compatability
 
 [dburl]: https://github.com/xo/dburl
 [dburl-schemes]: https://github.com/xo/dburl#protocol-schemes-and-aliases
-[godoc]: https://godoc.org/github.com/xo/usql
+[godoc]: https://godoc.org/github.com/xubingnan123/usql
 [go-project]: https://golang.org/project
 [homebrew]: https://brew.sh/
 [xo]: https://github.com/xo/xo

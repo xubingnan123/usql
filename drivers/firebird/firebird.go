@@ -4,7 +4,7 @@ import (
 	// DRIVER: firebirdsql
 	_ "github.com/nakagami/firebirdsql"
 
-	"github.com/xo/usql/drivers"
+	"github.com/xubingnan123/usql/drivers"
 )
 
 func init() {
