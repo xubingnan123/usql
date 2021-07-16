@@ -230,7 +230,7 @@ func New(cmds []string, in, out string, histfile string) (IO, error) {
 		},
 		Out: stdout,
 		Err: stderr,
-		Int: interactive || cygwin,
+		Int: true,
 		Cyg: cygwin,
 		P:   l.SetPrompt,
 		S:   l.SaveHistory,

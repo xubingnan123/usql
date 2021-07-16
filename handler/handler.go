@@ -817,7 +817,7 @@ func (h *Handler) execSet(w io.Writer, prefix, qstr string, _ bool, namePrefix s
 	clen, tfmt := len(cols), h.timefmt()
 	for q.Next() {
 		if i == 0 {
-			row, err = h.scan(q, clen, tfmt)
+			row, err = h.Scan(q, clen, tfmt)
 			if err != nil {
 				return err
 			}
@@ -909,7 +909,7 @@ func (h *Handler) execRows(w io.Writer, q *sql.Rows) error {
 	clen, tfmt := len(cols), h.timefmt()
 	for q.Next() {
 		if clen != 0 {
-			row, err := h.scan(q, clen, tfmt)
+			row, err := h.Scan(q, clen, tfmt)
 			if err != nil {
 				return err
 			}
@@ -946,7 +946,7 @@ func (h *Handler) outputRows(w io.Writer, q *sql.Rows) error {
 	clen, tfmt := len(cols), h.timefmt()
 	for q.Next() {
 		if clen != 0 {
-			row, err := h.scan(q, clen, tfmt)
+			row, err := h.Scan(q, clen, tfmt)
 			if err != nil {
 				return err
 			}
@@ -966,10 +966,10 @@ func (h *Handler) outputRows(w io.Writer, q *sql.Rows) error {
 }
 
 // scan scans a row.
-func (h *Handler) scan(q *sql.Rows, clen int, tfmt string) ([]string, error) {
+func (h *Handler) Scan(q *sql.Rows, clen int, tfmt string) ([]string, error) {
 	var err error
 
-	// scan to []interface{}
+	// Scan to []interface{}
 	r := make([]interface{}, clen)
 	for i := range r {
 		r[i] = new(interface{})

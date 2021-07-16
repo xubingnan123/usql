@@ -13,7 +13,7 @@ require (
 	github.com/alecthomas/repr v0.0.0-20180318094337-07932d32eb40 // indirect
 	github.com/alexbrainman/odbc v0.0.0-20180530121416-fd59e65aa0cc
 	github.com/alexflint/go-arg v0.0.0-20180516182405-f7c0423bd11e
-	github.com/alexflint/go-scalar v0.0.0-20170216020425-e80c3b7ed292 // indirect
+	github.com/alexflint/go-scalar v1.0.0 // indirect
 	github.com/apache/calcite-avatica-go v0.0.0-20180529084656-24bae0c8efd0
 	github.com/bitly/go-hostpool v0.0.0-20171023180738-a3a6125de932 // indirect
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
