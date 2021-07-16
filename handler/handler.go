@@ -965,7 +965,7 @@ func (h *Handler) outputRows(w io.Writer, q *sql.Rows) error {
 	return nil
 }
 
-// scan scans a row.
+// Scan  scans a row.
 func (h *Handler) Scan(q *sql.Rows, clen int, tfmt string) ([]string, error) {
 	var err error
 
