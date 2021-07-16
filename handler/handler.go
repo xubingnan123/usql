@@ -31,7 +31,7 @@ import (
 
 // Handler is a input process handler.
 type Handler struct {
-	l    rline.IO
+	L    rline.IO
 	user *user.User
 	wd   string
 	nopw bool
@@ -52,9 +52,9 @@ type Handler struct {
 	batchEnd string
 
 	// connection
-	u  *dburl.URL
-	db *sql.DB
-	tx *sql.Tx
+	U  *dburl.URL
+	Db *sql.DB
+	Tx *sql.Tx
 }
 
 // New creates a new input handler.
@@ -84,7 +84,7 @@ func New(l rline.IO, user *user.User, wd string, nopw bool) *Handler {
 	}
 
 	h := &Handler{
-		l:    l,
+		L:    l,
 		user: user,
 		wd:   wd,
 		nopw: nopw,
@@ -133,7 +133,7 @@ func (h *Handler) outputHighlighter(s string) string {
 	full += s
 
 	// setup statement parser
-	st := drivers.NewStmt(h.u, func() func() ([]rune, error) {
+	st := drivers.NewStmt(h.U, func() func() ([]rune, error) {
 		y := strings.Split(orig, "\n")
 		if y[0] == "" {
 			y[0] = s
@@ -210,12 +210,12 @@ func (h *Handler) outputHighlighter(s string) string {
 
 // Run executes queries and commands.
 func (h *Handler) Run() error {
-	stdout, stderr, iactive := h.l.Stdout(), h.l.Stderr(), h.l.Interactive()
+	stdout, stderr, iactive := h.L.Stdout(), h.L.Stderr(), h.L.Interactive()
 
 	// display welcome info
 	if iactive {
-		fmt.Fprintln(h.l.Stdout(), text.WelcomeDesc)
-		fmt.Fprintln(h.l.Stdout())
+		fmt.Fprintln(h.L.Stdout(), text.WelcomeDesc)
+		fmt.Fprintln(h.L.Stdout())
 	}
 
 	for {
@@ -224,7 +224,7 @@ func (h *Handler) Run() error {
 
 		// set prompt
 		if iactive {
-			h.l.Prompt(h.Prompt())
+			h.L.Prompt(h.Prompt())
 		}
 
 		// read next statement/command
@@ -288,8 +288,8 @@ func (h *Handler) Run() error {
 		// execute buf
 		if execute || h.buf.Ready() || res.Exec != metacmd.ExecNone {
 			// intercept batch query
-			if h.u != nil {
-				typ, end, batch := drivers.IsBatchQueryPrefix(h.u, h.buf.Prefix)
+			if h.U != nil {
+				typ, end, batch := drivers.IsBatchQueryPrefix(h.U, h.buf.Prefix)
 				switch {
 				case h.batch && batch:
 					fmt.Fprintf(stderr, "error: cannot perform %s in existing batch", typ)
@@ -336,9 +336,9 @@ func (h *Handler) Run() error {
 			if !h.batch && h.last != "" && h.last != ";" {
 				// force a transaction for batched queries for certain drivers
 				var forceBatch bool
-				if h.u != nil {
-					_, _, forceBatch = drivers.IsBatchQueryPrefix(h.u, stmt.FindPrefix(h.last))
-					forceBatch = forceBatch && drivers.BatchAsTransaction(h.u)
+				if h.U != nil {
+					_, _, forceBatch = drivers.IsBatchQueryPrefix(h.U, stmt.FindPrefix(h.last))
+					forceBatch = forceBatch && drivers.BatchAsTransaction(h.U)
 				}
 
 				// execute
@@ -353,14 +353,14 @@ func (h *Handler) Run() error {
 
 // Execute executes a query against the connected database.
 func (h *Handler) Execute(w io.Writer, res metacmd.Res, prefix, qstr string, forceTrans bool) error {
-	if h.db == nil {
+	if h.Db == nil {
 		return text.ErrNotConnected
 	}
 
 	// determine type and pre process string
-	prefix, qstr, qtyp, err := drivers.Process(h.u, prefix, qstr)
+	prefix, qstr, qtyp, err := drivers.Process(h.U, prefix, qstr)
 	if err != nil {
-		return drivers.WrapErr(h.u.Driver, err)
+		return drivers.WrapErr(h.U.Driver, err)
 	}
 
 	// start a transaction if forced
@@ -378,10 +378,10 @@ func (h *Handler) Execute(w io.Writer, res metacmd.Res, prefix, qstr string, for
 		f = h.execExec
 	}
 
-	if err = drivers.WrapErr(h.u.Driver, f(w, prefix, qstr, qtyp, res.ExecParam)); err != nil {
+	if err = drivers.WrapErr(h.U.Driver, f(w, prefix, qstr, qtyp, res.ExecParam)); err != nil {
 		if forceTrans {
-			defer h.tx.Rollback()
-			h.tx = nil
+			defer h.Tx.Rollback()
+			h.Tx = nil
 		}
 		return err
 	}
@@ -417,15 +417,15 @@ func (h *Handler) Reset(r []rune) {
 func (h *Handler) Prompt() string {
 	s := text.NotConnected
 
-	if h.db != nil {
-		s = h.u.Short()
+	if h.Db != nil {
+		s = h.U.Short()
 		if s == "" {
-			s = "(" + h.u.Driver + ")"
+			s = "(" + h.U.Driver + ")"
 		}
 	}
 
 	tx := ">"
-	if h.tx != nil || h.batch {
+	if h.Tx != nil || h.batch {
 		tx = "~"
 	}
 
@@ -434,7 +434,7 @@ func (h *Handler) Prompt() string {
 
 // IO returns the io for the handler.
 func (h *Handler) IO() rline.IO {
-	return h.l
+	return h.L
 }
 
 // User returns the user for the handler.
@@ -444,16 +444,16 @@ func (h *Handler) User() *user.User {
 
 // URL returns the URL for the handler.
 func (h *Handler) URL() *dburl.URL {
-	return h.u
+	return h.U
 }
 
 // DB returns the sql.DB for the handler.
 func (h *Handler) DB() drivers.DB {
-	if h.tx != nil {
-		return h.tx
+	if h.Tx != nil {
+		return h.Tx
 	}
 
-	return h.db
+	return h.Db
 }
 
 // Last returns the last executed statement.
@@ -476,7 +476,7 @@ func (h *Handler) Highlight(w io.Writer, buf string) error {
 	vars := env.All()
 
 	// create lexer, formatter, styler
-	l := chroma.Coalesce(drivers.Lexer(h.u))
+	l := chroma.Coalesce(drivers.Lexer(h.U))
 	f := formatters.Get(vars["SYNTAX_HL_FORMAT"])
 	s := styles.Get(vars["SYNTAX_HL_STYLE"])
 
@@ -509,7 +509,7 @@ func (h *Handler) Open(params ...string) error {
 		return nil
 	}
 
-	if h.tx != nil {
+	if h.Tx != nil {
 		return text.ErrPreviousTransactionExists
 	}
 
@@ -518,7 +518,7 @@ func (h *Handler) Open(params ...string) error {
 		urlstr := params[0]
 
 		// parse dsn
-		h.u, err = dburl.Parse(urlstr)
+		h.U, err = dburl.Parse(urlstr)
 		switch {
 		case err == dburl.ErrInvalidDatabaseScheme:
 			var fi os.FileInfo
@@ -543,40 +543,40 @@ func (h *Handler) Open(params ...string) error {
 		}
 
 		// force parameters
-		h.forceParams(h.u)
+		h.forceParams(h.U)
 	} else {
-		h.u = &dburl.URL{
+		h.U = &dburl.URL{
 			Driver: params[0],
 			DSN:    strings.Join(params[1:], " "),
 		}
 	}
 
 	// open connection
-	h.db, err = drivers.Open(h.u)
-	if err != nil && !drivers.IsPasswordErr(h.u, err) {
+	h.Db, err = drivers.Open(h.U)
+	if err != nil && !drivers.IsPasswordErr(h.U, err) {
 		defer h.Close()
 		return err
 	}
 
 	// set buffer options
-	drivers.ConfigStmt(h.u, h.buf)
+	drivers.ConfigStmt(h.U, h.buf)
 
 	// force error/check connection
 	if err == nil {
-		if err = drivers.Ping(h.u, h.db); err == nil {
+		if err = drivers.Ping(h.U, h.Db); err == nil {
 			return h.Version()
 		}
 	}
 
 	// bail without getting password
-	if h.nopw || !drivers.IsPasswordErr(h.u, err) || len(params) > 1 || !h.l.Interactive() {
+	if h.nopw || !drivers.IsPasswordErr(h.U, err) || len(params) > 1 || !h.L.Interactive() {
 		defer h.Close()
 		return err
 	}
 
 	// print the error
-	fmt.Fprintf(h.l.Stderr(), "error: %v", err)
-	fmt.Fprintln(h.l.Stderr())
+	fmt.Fprintf(h.L.Stderr(), "error: %v", err)
+	fmt.Fprintln(h.L.Stderr())
 
 	// otherwise, try to collect a password ...
 	dsn, err := h.Password(params[0])
@@ -600,14 +600,14 @@ func (h *Handler) forceParams(u *dburl.URL) {
 	// see if password entry is present
 	user, err := env.PassFileEntry(h.user, u)
 	if err != nil {
-		errout := h.l.Stderr()
+		errout := h.L.Stderr()
 		fmt.Fprintf(errout, "error: %v", err)
 		fmt.Fprintln(errout)
 	} else if user != nil {
 		u.User = user
 	}
 
-	// copy back to u
+	// copy back to U
 	z, _ := dburl.Parse(u.String())
 	*u = *z
 }
@@ -630,7 +630,7 @@ func (h *Handler) Password(dsn string) (string, error) {
 	if u.User != nil {
 		user = u.User.Username()
 	}
-	pass, err := h.l.Password(text.EnterPassword)
+	pass, err := h.L.Password(text.EnterPassword)
 	if err != nil {
 		return "", err
 	}
@@ -641,14 +641,14 @@ func (h *Handler) Password(dsn string) (string, error) {
 
 // Close closes the database connection if it is open.
 func (h *Handler) Close() error {
-	if h.tx != nil {
+	if h.Tx != nil {
 		return text.ErrPreviousTransactionExists
 	}
 
-	if h.db != nil {
-		err := h.db.Close()
-		drv := h.u.Driver
-		h.db, h.u = nil, nil
+	if h.Db != nil {
+		err := h.Db.Close()
+		drv := h.U.Driver
+		h.Db, h.U = nil, nil
 		return drivers.WrapErr(drv, err)
 	}
 
@@ -658,7 +658,7 @@ func (h *Handler) Close() error {
 // ReadVar reads a variable from the interactive prompt, saving it to
 // environment variables.
 func (h *Handler) ReadVar(typ, prompt string) (string, error) {
-	if !h.l.Interactive() {
+	if !h.L.Interactive() {
 		return "", text.ErrNotInteractive
 	}
 
@@ -678,11 +678,11 @@ func (h *Handler) ReadVar(typ, prompt string) (string, error) {
 		if prompt == "" {
 			prompt = text.EnterPassword
 		}
-		v, err = h.l.Password(prompt)
+		v, err = h.L.Password(prompt)
 	} else {
-		h.l.Prompt(prompt)
+		h.L.Prompt(prompt)
 		var r []rune
-		r, err = h.l.Next()
+		r, err = h.L.Next()
 		v = string(r)
 	}
 
@@ -706,25 +706,25 @@ func (h *Handler) ReadVar(typ, prompt string) (string, error) {
 
 // ChangePassword changes a password for the user.
 func (h *Handler) ChangePassword(user string) (string, error) {
-	if h.db == nil {
+	if h.Db == nil {
 		return "", text.ErrNotConnected
 	}
 
-	if !h.l.Interactive() {
+	if !h.L.Interactive() {
 		return "", text.ErrNotInteractive
 	}
 
 	var err error
 
-	if err = drivers.CanChangePassword(h.u); err != nil {
+	if err = drivers.CanChangePassword(h.U); err != nil {
 		return "", err
 	}
 
 	var newpw, newpw2, oldpw string
 
 	// ask for previous password
-	if user == "" && drivers.RequirePreviousPassword(h.u) {
-		oldpw, err = h.l.Password(text.EnterPreviousPassword)
+	if user == "" && drivers.RequirePreviousPassword(h.U) {
+		oldpw, err = h.L.Password(text.EnterPreviousPassword)
 		if err != nil {
 			return "", err
 		}
@@ -732,16 +732,16 @@ func (h *Handler) ChangePassword(user string) (string, error) {
 
 	// attempt to get passwords
 	for i := 0; i < 3; i++ {
-		if newpw, err = h.l.Password(text.NewPassword); err != nil {
+		if newpw, err = h.L.Password(text.NewPassword); err != nil {
 			return "", err
 		}
-		if newpw2, err = h.l.Password(text.ConfirmPassword); err != nil {
+		if newpw2, err = h.L.Password(text.ConfirmPassword); err != nil {
 			return "", err
 		}
 		if newpw == newpw2 {
 			break
 		}
-		fmt.Fprintln(h.l.Stderr(), text.PasswordsDoNotMatch)
+		fmt.Fprintln(h.L.Stderr(), text.PasswordsDoNotMatch)
 	}
 
 	// verify passwords match
@@ -749,7 +749,7 @@ func (h *Handler) ChangePassword(user string) (string, error) {
 		return "", text.ErrPasswordAttemptsExhausted
 	}
 
-	return drivers.ChangePassword(h.u, h.DB(), user, newpw, oldpw)
+	return drivers.ChangePassword(h.U, h.DB(), user, newpw, oldpw)
 }
 
 // Version prints the database version information after a successful connection.
@@ -758,26 +758,26 @@ func (h *Handler) Version() error {
 		return nil
 	}
 
-	if h.db == nil {
+	if h.Db == nil {
 		return text.ErrNotConnected
 	}
 
-	ver, err := drivers.Version(h.u, h.DB())
+	ver, err := drivers.Version(h.U, h.DB())
 	if err != nil {
 		ver = fmt.Sprintf("<unknown, error: %v>", err)
 	}
 
 	if ver != "" {
-		out := h.l.Stdout()
-		fmt.Fprintf(out, text.ConnInfo, h.u.Driver, ver)
+		out := h.L.Stdout()
+		fmt.Fprintf(out, text.ConnInfo, h.U.Driver, ver)
 		fmt.Fprintln(out)
 	}
 
 	return nil
 }
 
-// timefmt returns the current time format setting.
-func (h *Handler) timefmt() string {
+// TimeFmt returns the current time format setting.
+func (h *Handler) TimeFmt() string {
 	s, ok := env.All()["TIME_FORMAT"]
 	if !ok || s == "" {
 		s = time.RFC3339Nano
@@ -806,7 +806,7 @@ func (h *Handler) execSet(w io.Writer, prefix, qstr string, _ bool, namePrefix s
 	}
 
 	// get cols
-	cols, err := drivers.Columns(h.u, q)
+	cols, err := drivers.Columns(h.U, q)
 	if err != nil {
 		return err
 	}
@@ -814,7 +814,7 @@ func (h *Handler) execSet(w io.Writer, prefix, qstr string, _ bool, namePrefix s
 	// process row(s)
 	var i int
 	var row []string
-	clen, tfmt := len(cols), h.timefmt()
+	clen, tfmt := len(cols), h.TimeFmt()
 	for q.Next() {
 		if i == 0 {
 			row, err = h.Scan(q, clen, tfmt)
@@ -899,14 +899,14 @@ func (h *Handler) execRows(w io.Writer, q *sql.Rows) error {
 	var err error
 
 	// get columns
-	cols, err := drivers.Columns(h.u, q)
+	cols, err := drivers.Columns(h.U, q)
 	if err != nil {
 		return err
 	}
 
 	// process rows
 	res := metacmd.Res{Exec: metacmd.ExecOnly}
-	clen, tfmt := len(cols), h.timefmt()
+	clen, tfmt := len(cols), h.TimeFmt()
 	for q.Next() {
 		if clen != 0 {
 			row, err := h.Scan(q, clen, tfmt)
@@ -929,7 +929,7 @@ func (h *Handler) execRows(w io.Writer, q *sql.Rows) error {
 // outputRows outputs the supplied SQL rows to the supplied writer.
 func (h *Handler) outputRows(w io.Writer, q *sql.Rows) error {
 	// get columns
-	cols, err := drivers.Columns(h.u, q)
+	cols, err := drivers.Columns(h.U, q)
 	if err != nil {
 		return err
 	}
@@ -943,7 +943,7 @@ func (h *Handler) outputRows(w io.Writer, q *sql.Rows) error {
 
 	// process rows
 	var rows int
-	clen, tfmt := len(cols), h.timefmt()
+	clen, tfmt := len(cols), h.TimeFmt()
 	for q.Next() {
 		if clen != 0 {
 			row, err := h.Scan(q, clen, tfmt)
@@ -979,8 +979,8 @@ func (h *Handler) Scan(q *sql.Rows, clen int, tfmt string) ([]string, error) {
 	}
 
 	// get conversion funcs
-	cb, cm, cs, cd := drivers.ConvertBytes(h.u), drivers.ConvertMap(h.u),
-		drivers.ConvertSlice(h.u), drivers.ConvertDefault(h.u)
+	cb, cm, cs, cd := drivers.ConvertBytes(h.U), drivers.ConvertMap(h.U),
+		drivers.ConvertSlice(h.U), drivers.ConvertDefault(h.U)
 
 	row := make([]string, clen)
 	for n, z := range r {
@@ -1038,7 +1038,7 @@ func (h *Handler) exec(w io.Writer, typ, qstr string) error {
 	}
 
 	// get affected
-	count, err := drivers.RowsAffected(h.u, res)
+	count, err := drivers.RowsAffected(h.U, res)
 	if err != nil {
 		return err
 	}
@@ -1058,18 +1058,18 @@ func (h *Handler) exec(w io.Writer, typ, qstr string) error {
 
 // Begin begins a transaction.
 func (h *Handler) Begin() error {
-	if h.db == nil {
+	if h.Db == nil {
 		return text.ErrNotConnected
 	}
 
-	if h.tx != nil {
+	if h.Tx != nil {
 		return text.ErrPreviousTransactionExists
 	}
 
 	var err error
-	h.tx, err = h.db.Begin()
+	h.Tx, err = h.Db.Begin()
 	if err != nil {
-		return drivers.WrapErr(h.u.Driver, err)
+		return drivers.WrapErr(h.U.Driver, err)
 	}
 
 	return nil
@@ -1077,20 +1077,20 @@ func (h *Handler) Begin() error {
 
 // Commit commits a transaction.
 func (h *Handler) Commit() error {
-	if h.db == nil {
+	if h.Db == nil {
 		return text.ErrNotConnected
 	}
 
-	if h.tx == nil {
+	if h.Tx == nil {
 		return text.ErrNoPreviousTransactionExists
 	}
 
-	tx := h.tx
-	h.tx = nil
+	tx := h.Tx
+	h.Tx = nil
 
 	err := tx.Commit()
 	if err != nil {
-		return drivers.WrapErr(h.u.Driver, err)
+		return drivers.WrapErr(h.U.Driver, err)
 	}
 
 	return nil
@@ -1098,20 +1098,20 @@ func (h *Handler) Commit() error {
 
 // Rollback rollbacks a transaction.
 func (h *Handler) Rollback() error {
-	if h.db == nil {
+	if h.Db == nil {
 		return text.ErrNotConnected
 	}
 
-	if h.tx == nil {
+	if h.Tx == nil {
 		return text.ErrNoPreviousTransactionExists
 	}
 
-	tx := h.tx
-	h.tx = nil
+	tx := h.Tx
+	h.Tx = nil
 
 	err := tx.Rollback()
 	if err != nil {
-		return drivers.WrapErr(h.u.Driver, err)
+		return drivers.WrapErr(h.U.Driver, err)
 	}
 
 	return nil
@@ -1144,19 +1144,19 @@ func (h *Handler) Include(path string, relative bool) error {
 			}
 			return []rune(s.Text()), nil
 		},
-		Out: h.l.Stdout(),
-		Err: h.l.Stderr(),
-		Pw:  h.l.Password,
+		Out: h.L.Stdout(),
+		Err: h.L.Stderr(),
+		Pw:  h.L.Password,
 	}
 
 	p := New(l, h.user, filepath.Dir(path), h.nopw)
-	p.db, p.u = h.db, h.u
+	p.Db, p.U = h.Db, h.U
 
 	err = p.Run()
 	if err == io.EOF {
 		err = nil
 	}
 
-	h.db, h.u = p.db, p.u
+	h.Db, h.U = p.Db, p.U
 	return err
 }
