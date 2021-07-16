@@ -776,8 +776,8 @@ func (h *Handler) Version() error {
 	return nil
 }
 
-// TimeFmt returns the current time format setting.
-func (h *Handler) TimeFmt() string {
+// Timefmt returns the current time format setting.
+func (h *Handler) Timefmt() string {
 	s, ok := env.All()["TIME_FORMAT"]
 	if !ok || s == "" {
 		s = time.RFC3339Nano
@@ -814,7 +814,7 @@ func (h *Handler) execSet(w io.Writer, prefix, qstr string, _ bool, namePrefix s
 	// process row(s)
 	var i int
 	var row []string
-	clen, tfmt := len(cols), h.TimeFmt()
+	clen, tfmt := len(cols), h.Timefmt()
 	for q.Next() {
 		if i == 0 {
 			row, err = h.Scan(q, clen, tfmt)
@@ -906,7 +906,7 @@ func (h *Handler) execRows(w io.Writer, q *sql.Rows) error {
 
 	// process rows
 	res := metacmd.Res{Exec: metacmd.ExecOnly}
-	clen, tfmt := len(cols), h.TimeFmt()
+	clen, tfmt := len(cols), h.Timefmt()
 	for q.Next() {
 		if clen != 0 {
 			row, err := h.Scan(q, clen, tfmt)
@@ -943,7 +943,7 @@ func (h *Handler) outputRows(w io.Writer, q *sql.Rows) error {
 
 	// process rows
 	var rows int
-	clen, tfmt := len(cols), h.TimeFmt()
+	clen, tfmt := len(cols), h.Timefmt()
 	for q.Next() {
 		if clen != 0 {
 			row, err := h.Scan(q, clen, tfmt)
